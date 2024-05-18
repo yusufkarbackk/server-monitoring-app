@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">projek-tmj</string>
+    <string name="title_activity_login_screen">LoginScreen</string>
+    <string name="title_activity_suhu">suhu</string>
+    <string name="title_activity_screens">Screens</string>
+    <string name="title_activity_projek_tmj_app">ProjekTmjApp</string>
+</resources>
