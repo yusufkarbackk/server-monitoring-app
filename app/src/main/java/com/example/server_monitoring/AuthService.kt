@@ -1,4 +1,4 @@
-package com.example.projek_tmj
+package com.example.server_monitoring
 
 import android.content.ContentValues.TAG
 import android.content.Context

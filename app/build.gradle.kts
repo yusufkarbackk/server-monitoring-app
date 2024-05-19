@@ -6,11 +6,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.projek_tmj"
+    namespace = "com.example.server_monitoring"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.projek_tmj"
+        applicationId = "com.example.server_monitoring"
         minSdk = 24
         targetSdk = 34
         versionCode = 1
@@ -52,6 +52,14 @@ android {
 }
 
 dependencies {
+    implementation ("androidx.compose.ui:ui:1.4.0")
+    implementation ("androidx.compose.material3:material3:1.1.0")
+    implementation ("com.google.firebase:firebase-database-ktx")
+    implementation ("androidx.compose.ui:ui:1.4.0")
+    implementation ("androidx.compose.material:material:1.4.0")
+    implementation ("androidx.compose.ui:ui-tooling-preview:1.4.0")
+    implementation ("androidx.lifecycle:lifecycle-runtime-ktx:2.6.0")
+    implementation ("androidx.activity:activity-compose:1.6.0")
     implementation ("androidx.navigation:navigation-compose:2.7.1")
     implementation("com.google.android.gms:play-services-auth:21.1.1")
     implementation(platform("com.google.firebase:firebase-bom:33.0.0"))

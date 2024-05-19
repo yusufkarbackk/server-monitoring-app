@@ -1,4 +1,4 @@
-package com.example.projek_tmj.ui.theme
+package com.example.server_monitoring.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

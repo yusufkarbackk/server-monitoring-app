@@ -1,11 +1,10 @@
-package com.example.projek_tmj.viewModel
+package com.example.server_monitoring.viewModel
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 
 object LoginState {
     val LOGGED_IN = true
