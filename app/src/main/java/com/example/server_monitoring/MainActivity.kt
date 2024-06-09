@@ -1,5 +1,6 @@
 package com.example.server_monitoring
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -10,7 +11,7 @@ import com.google.firebase.auth.auth
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        //NotificationService().createNotificationChannel(this)
         var auth: FirebaseAuth = Firebase.auth
 
         if (auth.currentUser != null){

@@ -52,6 +52,9 @@ android {
 }
 
 dependencies {
+    //implementation("androidx.core:core-ktx:2.2.0")
+//    implementation ("com.google.firebase:firebase-database:20.0.5")
+//    implementation ("com.google.firebase:firebase-messaging:23.1.0")
     implementation ("androidx.compose.ui:ui:1.4.0")
     implementation ("androidx.compose.material3:material3:1.1.0")
     implementation ("com.google.firebase:firebase-database-ktx")

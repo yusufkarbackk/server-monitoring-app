@@ -1,5 +1,4 @@
 package com.example.server_monitoring
-
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -31,8 +30,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.server_monitoring.ui.theme.ProjektmjTheme
 import com.example.server_monitoring.viewModel.MainViewModel
@@ -47,7 +48,7 @@ class suhu : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-                // A surface container using the 'background' color from the theme
+            // A surface container using the 'background' color from the theme
             val mainViewModel: MainViewModel = viewModel()
             SuhuScreen(Modifier, this, mainViewModel)
         }
@@ -71,10 +72,16 @@ fun SuhuScreen(modifier: Modifier = Modifier, context: Context, viewModel: MainV
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (snapshot.exists()) {
                     val latestData = snapshot.children.last()
-                    val kelembaban = latestData.child("kelembaban").getValue(Double::class.java) ?: 0.0
+                    val kelembaban =
+                        latestData.child("kelembaban").getValue(Double::class.java) ?: 0.0
                     val suhu = latestData.child("suhu").getValue(Double::class.java) ?: 0.0
-                    val teganganAC = latestData.child("teganganAC").getValue(Double::class.java) ?: 0.0
+                    val teganganAC =
+                        latestData.child("teganganAC").getValue(Double::class.java) ?: 0.0
                     sensorData = SensorData(kelembaban, suhu, teganganAC)
+
+//                    if (suhu > 40.0){
+//                        NotificationService().sendNotification(suhu, context)
+//                    }
                 }
                 isLoading = false
             }
@@ -96,8 +103,16 @@ fun SuhuScreen(modifier: Modifier = Modifier, context: Context, viewModel: MainV
         }
     } else {
         sensorData?.let {
-            Box(modifier = Modifier.background(Color(0xFF051637)).fillMaxSize()) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.SpaceEvenly) {
+            Box(
+                modifier = Modifier
+                    .background(Color(0xFF051637))
+                    .fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.SpaceEvenly
+                ) {
                     Row(
                         horizontalArrangement = Arrangement.SpaceEvenly,
                         verticalAlignment = Alignment.CenterVertically,
@@ -107,7 +122,10 @@ fun SuhuScreen(modifier: Modifier = Modifier, context: Context, viewModel: MainV
                             modifier = Modifier
                         ) {
                             Text(
-                                text = "${it.kelembaban}",color = Color.White,
+                                text = "${it.kelembaban}%",
+                                color = Color.White,
+                                fontSize = 22.sp,
+                                fontWeight = FontWeight.Bold,
                                 modifier = Modifier.padding(bottom = 12.dp)
                             )
                             Text(text = "Kelembaban", color = Color.White)
@@ -116,7 +134,10 @@ fun SuhuScreen(modifier: Modifier = Modifier, context: Context, viewModel: MainV
                             modifier = Modifier
                         ) {
                             Text(
-                                text = "${it.teganganAC}",color = Color.White,
+                                text = "${it.teganganAC}V",
+                                color = Color.White,
+                                fontSize = 22.sp,
+                                fontWeight = FontWeight.Bold,
                                 modifier = Modifier.padding(bottom = 12.dp)
                             )
                             Text(text = "Tegangan AC", color = Color.White)
@@ -124,22 +145,27 @@ fun SuhuScreen(modifier: Modifier = Modifier, context: Context, viewModel: MainV
                         Column(
                             modifier = Modifier
                         ) {
-                            Text(text = "${it.suhu}", color = Color.White,
-                                modifier = Modifier.padding(bottom = 12.dp))
-                            Text(text = "Suhu:", color = Color.White)
+                            Text(
+                                text = "${it.suhu}C",
+                                color = Color.White,
+                                fontSize = 22.sp,
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.padding(bottom = 12.dp),
+                            )
+                            Text(text = "Suhu", color = Color.White)
                         }
                     }
                     Button(
                         modifier = Modifier
-                            .width(260.dp)
+                            .width(200.dp)
                             .padding(top = 40.dp)
-                            .height(60.dp),
+                            .height(40.dp),
                         onClick = {
                             AuthService().signOut(context)
                         },
                         colors = ButtonDefaults.buttonColors(Color(0xFFFF3636)),
                     ) {
-                        if (isLoading){
+                        if (isLoading) {
                             androidx.compose.material3.CircularProgressIndicator(color = Color.White)
                         } else {
                             Text(text = "Logout", color = Color.White)
@@ -148,7 +174,8 @@ fun SuhuScreen(modifier: Modifier = Modifier, context: Context, viewModel: MainV
                 }
             }
         } ?: Text(text = "No data available")
-    }}
+    }
+}
 
 @Preview(showBackground = true)
 @Composable
