@@ -12,6 +12,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.IBinder
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import com.google.firebase.Firebase
 import com.google.firebase.database.DataSnapshot
@@ -29,10 +30,10 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.create
 import retrofit2.http.Body
 import retrofit2.http.POST
+import java.time.LocalDateTime
 
 class SensorService : Service() {
     val url = "https://server-monitoring-2-l7uklkz22a-et.a.run.app/"
-    private lateinit var requestQueue: RequestQueue
     private lateinit var apiService: ApiService
     private val channelId = "sensor_alert_channel"
     private val channelName = "Sensor Alert Channel"
@@ -48,6 +49,7 @@ class SensorService : Service() {
         apiService = retrofit.create(ApiService::class.java)
 
         datalistener = object : ValueEventListener {
+            @RequiresApi(Build.VERSION_CODES.O)
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (snapshot.exists()) {
                     val latestData = snapshot.children.last()
@@ -62,7 +64,7 @@ class SensorService : Service() {
                     val sensorDataRequest = SensorDataRequest(suhu.toString(),
                         kelembaban.toString(), teganganAC.toString()
                     )
-
+                    Log.i("get data", "listen to data change")
                     sendSensorData(sensorDataRequest)
                 }
             }
@@ -75,6 +77,7 @@ class SensorService : Service() {
         startForegroundService()
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun sendSensorData(sensorDataRequest: SensorDataRequest) {
         // Make network call on a background thread
         CoroutineScope(Dispatchers.IO).launch {
@@ -88,29 +91,34 @@ class SensorService : Service() {
                 intent.putExtra("teganganAC", response.decryptedTeganganAC)
                 sendBroadcast(intent)
 
-                val rawSensorData = SensorData(response.decryptedTeganganAC, response.decryptedSuhu, response.decryptedTeganganAC)
-                val fuzzifiedData = FuzzyLogic().fuzzify(rawSensorData)
-
-                val aboveThresholdSensors = FuzzyLogic().getAboveThresholdSensors(fuzzifiedData)
-                val belowThresholdSensors = FuzzyLogic().getBelowThresholdSensors(fuzzifiedData)
+//                val rawSensorData = SensorData(response.decryptedTeganganAC, response.decryptedSuhu, response.decryptedTeganganAC)
+//                val fuzzifiedData = FuzzyLogic().fuzzify(rawSensorData)
+//
+//                val aboveThresholdSensors = FuzzyLogic().getAboveThresholdSensors(fuzzifiedData)
+//                val belowThresholdSensors = FuzzyLogic().getBelowThresholdSensors(fuzzifiedData)
 
                 val sensorData = SensorData(response.decryptedKelembaban, response.decryptedSuhu, response.decryptedTeganganAC)
-                Log.d("SensorService", "Response: $aboveThresholdSensors")
-                Log.d("SensorService", "Response: $belowThresholdSensors")
+                var notifText = ""
 
-
-                if (aboveThresholdSensors.isNotEmpty()){
-                    aboveThresholdSensors.forEach { sensor ->
-                        sendNotification("$sensor value exceeds threshold: ${FuzzyLogic().getSensorValue(sensor, sensorData)}")
-                    }
+                if (sensorData.suhu!! > 26.0){
+                    notifText += "suhu exceeds the threshold: ${sensorData.suhu}\n"
+                } else if (sensorData.suhu!! < 26.0) {
+                    notifText += "suhu is below the threshold: ${sensorData.suhu}\n"
                 }
 
-                if (belowThresholdSensors.isNotEmpty()){
-                    belowThresholdSensors.forEach { sensor ->
-                        sendNotification("$sensor value is below threshold: ${FuzzyLogic().getSensorValue(sensor, sensorData)}")
-                    }
+                if (sensorData.kelembaban!! > 40.0){
+                    notifText += "kelembaban exceeds the threshold: ${sensorData.kelembaban}\n"
+                } else if (sensorData.kelembaban!! < 40.0) {
+                    notifText += "kelembaban is below the threshold: ${sensorData.kelembaban}\n"
                 }
 
+                if (sensorData.teganganAC!! > 220.0){
+                    notifText += "tegangan exceeds the threshold: ${sensorData.teganganAC}\n"
+                } else if (sensorData.teganganAC!! < 220.0) {
+                    notifText += "tegangan is below the threshold: ${sensorData.teganganAC}\n"
+                }
+
+                sendNotification(notifText)
 
             } catch (e: Exception) {
                 Log.e("SensorService", "Network error: ${e.message}", e)
@@ -140,6 +148,7 @@ class SensorService : Service() {
 
     fun checkAndNotify(sensorValue: Double, context: Context) {}
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun sendNotification(value: String) {
 
         // Create an explicit intent for launching WhatsApp
@@ -182,10 +191,10 @@ class SensorService : Service() {
             getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
         val notificationBuilder = NotificationCompat.Builder(this, channelId)
-            .setContentTitle("Sensor Alert")
-            .setContentText("Sensor value exceeds threshold: $value")
+            .setContentTitle("Sensor Alert ${LocalDateTime.now()}")
+            .setContentText(value)
             .setSmallIcon(R.drawable.logo)
-            .addAction(R.drawable.logo, "Call via Whahtsapp", whatsappPendingIntent)
+            .addAction(R.drawable.logo, "Call via Whatsapp", whatsappPendingIntent)
             .addAction(R.drawable.logo, "Dismiss", dismissPendingIntent)
             .setAutoCancel(true)
         notificationManager.notify(0, notificationBuilder.build())

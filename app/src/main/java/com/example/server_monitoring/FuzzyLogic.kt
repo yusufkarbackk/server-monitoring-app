@@ -13,7 +13,7 @@ class FuzzyLogic {
         return if (value > max) 1.0 else if (value < min) 0.0 else 0.0
     }
 
-    fun fuzzify(sensorData: SensorData): Map<String, Map<String, Double>> {
+    fun fuzzify(sensorData: SensorData): Map<String, Map<String, Double>> {  
         return mapOf(
             "suhu" to mapOf(
                 "low" to lowMembership(sensorData.suhu!!, 18.0, 22.0),

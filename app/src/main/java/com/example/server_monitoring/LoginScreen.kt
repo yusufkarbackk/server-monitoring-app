@@ -2,7 +2,9 @@ package com.example.server_monitoring
 
 import android.content.Context
 import android.content.Intent
+//import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
@@ -125,11 +127,13 @@ fun LoginScreen(modifier: Modifier = Modifier, context: Context) {
                             .height(60.dp),
                         onClick = {
                             isLoading = true
-                            var status = AuthService().login(username, password, context) {success ->
+                            AuthService().login(username, password, context) {success ->
                                 isLoading = false
                                 if (success){
+                                    MainActivity().startAppService()
                                     val intentAja = Intent(context, suhu::class.java)
                                     context.startActivity(intentAja)
+                                    Log.i("screen", "go to suhu screen from login")
                                 }
                             }
                         },
